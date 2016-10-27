@@ -22,18 +22,22 @@ class App {
             this.onGameEvents(socket);
 
             // Cuando alguien se desconecta
-            socket.on('disconnected', ()=>{
+            socket.on('disconnect', ()=>{
                 this.onClientDisconnection(socket);
             })
         });
     }
 
     onNewClient(socket){
+        console.log('new client', socket.id)
 
+        socket.emit('hello', {
+            id: socket.id
+        });
     }
 
     onClientDisconnection(socket){
-
+        console.log('goodbye from', socket.id)
     }
 
     onGameEvents(socket){
