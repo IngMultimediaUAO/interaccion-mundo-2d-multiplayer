@@ -1,49 +1,66 @@
 /**
  * La aplicación
+ * 
+ * es5 - es2015
  */
-class App {
 
-    constructor(io){
-        this.io = io;
+function App(io) {
 
-        // se inicializa el arreglo de 
-        this.clients = [];
+    this.io = io;
 
-        // se configuran los eventos que va a recibir o enviar la aplicación
-        this.configureEvents();
-    }
+    // se inicializa el arreglo de 
+    this.clients = [];
 
-    configureEvents(){
-        this.io.sockets.on('connection', (socket) => {
-            // Cada vez que alguien nuevo se conecta
-            this.onNewClient(socket);
+    // se configuran los eventos que va a recibir o enviar la aplicación
+    this.configureEvents();
+}
 
-            // Los eventos del juego
-            this.onGameEvents(socket);
+App.prototype.configureEvents = function () {
+    var klass = this;
 
-            // Cuando alguien se desconecta
-            socket.on('disconnect', ()=>{
-                this.onClientDisconnection(socket);
-            })
-        });
-    }
+    this.io.sockets.on('connection', function (socket) {
+        // Cada vez que alguien nuevo se conecta
+        klass.onNewClient(socket);
 
-    onNewClient(socket){
-        console.log('new client', socket.id)
+        // Los eventos del juego
+        klass.onGameEvents(socket);
 
-        socket.emit('hello', {
-            id: socket.id
-        });
-    }
+        // Cuando alguien se desconecta
+        socket.on('disconnect', () => {
+            klass.onClientDisconnection(socket);
+        })
+    });
+}
 
-    onClientDisconnection(socket){
-        console.log('goodbye from', socket.id)
-    }
+App.prototype.onNewClient = function (socket) {
+    console.log('new client', socket.id)
 
-    onGameEvents(socket){
+    // emit -> al cliente dueño del socket
+    // socket.broadcast.emit -> le manda un dato a todos los otros
+    socket.emit('hello', {
+        id: socket.id
+    });
 
-    }
+    socket.broadcast.emit('newclient', {
+        id: socket.id
+    })
+}
 
+App.prototype.onClientDisconnection = function (socket) {
+    console.log('goodbye from', socket.id)
+}
+
+App.prototype.onGameEvents = function (socket) {
+
+    /**
+     * {
+     *  x: 
+     *  y:
+     * }
+     */
+    socket.on('userEvent', function (data) {
+        socket.broadcast.emit(data.event, data);
+    })
 }
 
 

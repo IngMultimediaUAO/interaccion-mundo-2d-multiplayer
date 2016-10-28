@@ -1,5 +1,6 @@
 var express = require('express');
 var socket = require('socket.io');
+
 var App = require('./App');
 
 // se crea el servidor
@@ -10,7 +11,7 @@ var expressServer = express();
 expressServer.use(express.static('public'));
 
 // Se inicia el servidor en el puerto 3000
-var server = expressServer.listen(3000, function(){
+var server = expressServer.listen(3000, function () {
     console.log('corriendo en puerto 3000');
 })
 
